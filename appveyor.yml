@@ -1,0 +1,78 @@
+version: 1.0.{build}
+
+image: Ubuntu2004
+
+branches:
+  only:
+    - appveyor
+
+install:
+
+- sh: >-
+
+    # apt-get --quiet update --yes
+    # apt-get --quiet install --yes curl gcc g++ make git
+    # apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+    # apt-get install --yes --no-install-recommends ninja-build linux-libc-dev
+
+    update-java-alternatives --list
+
+    sudo update-java-alternatives --set java-1.8.0-openjdk-amd64
+
+    export ANDROID_HOME="$HOME/android-home"
+
+    install -d $ANDROID_HOME
+
+    wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-6514223_latest.zip
+
+    pushd $ANDROID_HOME
+
+    unzip -d cmdline-tools cmdline-tools.zip
+
+    popd
+
+    export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/tools/bin/
+
+    sdkmanager --version
+
+    yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
+
+    sdkmanager --verbose --no_https --sdk_root=${ANDROID_HOME} "platforms;android-28"
+
+    sdkmanager --verbose --no_https --sdk_root=${ANDROID_HOME} "platform-tools"
+
+    sdkmanager --verbose --no_https --sdk_root=${ANDROID_HOME} "tools"
+
+    sdkmanager --verbose --no_https --sdk_root=${ANDROID_HOME} "build-tools;29.02"
+
+    sdkmanager --verbose --no_https --sdk_root=${ANDROID_HOME} "cmake;3.6.4111459"
+
+    sdkmanager --verbose --no_https --sdk_root=${ANDROID_HOME} "ndk;21.3.6528147"
+
+    chmod +x ./android/gradlew
+
+    nvm use 12
+
+build_script:
+
+- sh: node -v
+- sh: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.46.0
+- sh: source $HOME/.cargo/env
+- sh: rustup target add aarch64-linux-android
+- sh: rustup target add arm-linux-androideabi
+- sh: rustup target add armv7-linux-androideabi
+- sh: npm install --global react-native-cli
+- sh: npm install
+# - sh: npm run build-backend-android -- --verbose
+- sh: npm run lib
+- sh: ./tools/backend/move-to-nodejs-assets.sh
+- sh: cd nodejs-assets/nodejs-project && DONT_COMPILE=1 npm install --no-optional && cd ../..
+- sh: ./tools/backend/patch-android-ssb-neon-modules.sh
+- sh: ./tools/backend/pre-remove-unused-files.sh
+- sh: ./tools/backend/build-native-modules.sh
+- sh: ./tools/backend/post-remove-unused-files.sh
+- sh: ./tools/backend/noderify-mobile.sh
+- sh: ./tools/backend/move-shared-libs-android.sh
+- sh: rm -rf ./nodejs-assets/nodejs-project/node_modules
+- sh: rm -rf ./nodejs-assets/nodejs-project/patches
+- sh: rm ./nodejs-assets/nodejs-project/package-lock.json
