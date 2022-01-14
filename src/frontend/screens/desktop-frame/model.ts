@@ -6,14 +6,7 @@ import xs, {Stream} from 'xstream';
 import {FeedId} from 'ssb-typescript';
 import {Reducer} from '@cycle/state';
 import {SSBSource} from '../../drivers/ssb';
-import {
-  CentralUpdateActivity,
-  CentralUpdateConnections,
-  CentralUpdatePrivate,
-  CentralUpdatePublic,
-  GlobalEvent,
-} from '../../drivers/eventbus';
-import {PeerKV, StagedPeerKV} from '../../ssb/types';
+import {GlobalEvent} from '../../drivers/eventbus';
 import progressCalculation, {
   State as ProgressState,
   INITIAL_STATE as INITIAL_PROGRESS_STATE,
@@ -24,17 +17,7 @@ export interface State extends ProgressState {
   selfFeedId: FeedId;
   selfAvatarUrl?: string;
   name?: string;
-  currentTab: 'public' | 'private' | 'activity' | 'connections';
-  connections?: {
-    status: 'offline' | 'bad' | 'fair' | 'good';
-    peers: Array<PeerKV>;
-    rooms: Array<PeerKV>;
-    stagedPeers: Array<StagedPeerKV>;
-    initializedSSB: boolean;
-  };
-  numOfPublicUpdates: number;
-  numOfPrivateUpdates: number;
-  numOfActivityUpdates: number;
+  currentTab: 'home' | 'messages' | 'contacts' | 'discover' | 'profiles';
   allowCheckingNewVersion: boolean;
   hasNewVersion: boolean;
 }
@@ -49,24 +32,6 @@ export default function model(
   globalEventBus: Stream<GlobalEvent>,
   ssbSource: SSBSource,
 ) {
-  const centralUpdatePublic$ = globalEventBus.filter(
-    (ev) => ev.type === 'centralScreenUpdate' && ev.subtype === 'publicUpdates',
-  ) as Stream<CentralUpdatePublic>;
-
-  const centralUpdatePrivate$ = globalEventBus.filter(
-    (ev) =>
-      ev.type === 'centralScreenUpdate' && ev.subtype === 'privateUpdates',
-  ) as Stream<CentralUpdatePrivate>;
-
-  const centralUpdateActivity$ = globalEventBus.filter(
-    (ev) =>
-      ev.type === 'centralScreenUpdate' && ev.subtype === 'activityUpdates',
-  ) as Stream<CentralUpdateActivity>;
-
-  const centralUpdateConnections$ = globalEventBus.filter(
-    (ev) => ev.type === 'centralScreenUpdate' && ev.subtype === 'connections',
-  ) as Stream<CentralUpdateConnections>;
-
   const selfFeedId$ = ssbSource.selfFeedId$.take(1);
 
   const selfFeedIdReducer$ = selfFeedId$.map(
@@ -75,10 +40,7 @@ export default function model(
         if (!prev) {
           return {
             selfFeedId,
-            currentTab: 'public',
-            numOfPublicUpdates: 0,
-            numOfPrivateUpdates: 0,
-            numOfActivityUpdates: 0,
+            currentTab: 'home',
             allowCheckingNewVersion: false,
             hasNewVersion: false,
             ...INITIAL_PROGRESS_STATE,
@@ -103,10 +65,7 @@ export default function model(
             return {
               selfFeedId: about.id,
               selfAvatarUrl: about.imageUrl,
-              currentTab: 'public',
-              numOfPublicUpdates: 0,
-              numOfPrivateUpdates: 0,
-              numOfActivityUpdates: 0,
+              currentTab: 'messages',
               allowCheckingNewVersion: false,
               hasNewVersion: false,
               ...INITIAL_PROGRESS_STATE,
@@ -125,59 +84,6 @@ export default function model(
     (nextTab) =>
       function changeTabReducer(prev: State): State {
         return {...prev, currentTab: nextTab};
-      },
-  );
-
-  const updatePublicCounterReducer$ = centralUpdatePublic$.map(
-    ({counter}) =>
-      function updatePublicCounterReducer(prev: State): State {
-        if (!prev) return prev;
-        if (counter !== prev.numOfPublicUpdates) {
-          return {...prev, numOfPublicUpdates: counter};
-        } else {
-          return prev;
-        }
-      },
-  );
-
-  const updatePrivateCounterReducer$ = centralUpdatePrivate$.map(
-    ({counter}) =>
-      function updatePrivateCounterReducer(prev: State): State {
-        if (!prev) return prev;
-        if (counter !== prev.numOfPrivateUpdates) {
-          return {...prev, numOfPrivateUpdates: counter};
-        } else {
-          return prev;
-        }
-      },
-  );
-
-  const updateActivityCounterReducer$ = centralUpdateActivity$.map(
-    ({counter}) =>
-      function updateActivityCounterReducer(prev: State): State {
-        if (!prev) return prev;
-        if (counter !== prev.numOfActivityUpdates) {
-          return {...prev, numOfActivityUpdates: counter};
-        } else {
-          return prev;
-        }
-      },
-  );
-
-  const updateConnectionsReducer$ = centralUpdateConnections$.map(
-    (ev) =>
-      function updateConnectionsReducer(prev: State): State {
-        if (!prev) return prev;
-        const prevConnections = prev.connections;
-        const nextConnections = ev.substate;
-        if (!prevConnections || nextConnections !== prevConnections) {
-          return {
-            ...prev,
-            connections: nextConnections,
-          };
-        } else {
-          return prev;
-        }
       },
   );
 
@@ -226,10 +132,6 @@ export default function model(
     selfFeedIdReducer$,
     aboutReducer$,
     changeTabReducer$,
-    updatePublicCounterReducer$,
-    updatePrivateCounterReducer$,
-    updateActivityCounterReducer$,
-    updateConnectionsReducer$,
     readSettingsReducer$,
     allowCheckingNewVersionReducer$,
     hasNewVersionReducer$,

@@ -33,6 +33,14 @@ export interface DrawerToggleOnCentralScreen {
   open: boolean;
 }
 
+export interface HardwareBackOnContentScreen {
+  type: 'hardwareBackOnContentScreen';
+}
+
+export interface DrawerToggleOnContentScreen {
+  type: 'drawerToggleOnContentScreen';
+  open: boolean;
+}
 export interface AudioBlobComposed {
   type: 'audioBlobComposed';
   blobId: string;
@@ -47,45 +55,109 @@ export interface HasNewVersion {
   type: 'hasNewVersion';
 }
 
-export interface CentralChangeTab {
+export interface ContentChangeTab {
   subtype: 'changeTab';
-  tab: 'public' | 'private' | 'activity' | 'connections';
+  tab: 'home' | 'messages' | 'contacts' | 'discover' | 'profiles';
 }
 
-export interface CentralScrollToTop {
+export interface ContentScrollToTop {
   subtype: 'scrollToTop';
-  tab: 'public' | 'private' | 'activity' | 'connections';
+  tab: 'home' | 'messages' | 'contacts' | 'discover' | 'profiles';
 }
 
-export interface CentralUpdatePublic {
+export interface ContentUpdateHome {
+  subtype: 'homeUpdates';
+  counter: number;
+}
+
+export interface ContentUpdateMessages {
+  subtype: 'messagesUpdates';
+  counter: number;
+}
+
+export interface ContentUpdateContacts {
+  subtype: 'contactsUpdates';
+  counter: number;
+}
+
+export interface ContentUpdateDiscover {
+  subtype: 'discoverUpdate';
+  substate: number;
+}
+
+export interface ContentUpdateProfiles {
+  subtype: 'profilesUpdates';
+  counter: number;
+}
+
+export type ContentScreenUpdate = {
+  type: 'contentScreenUpdate';
+} & (
+  | ContentChangeTab
+  | ContentScrollToTop
+  | ContentUpdateHome
+  | ContentUpdateMessages
+  | ContentUpdateContacts
+  | ContentUpdateDiscover
+  | ContentUpdateProfiles
+);
+
+export interface MessageChangeTab {
+  subtype: 'changeTab';
+  tab: 'public' | 'private';
+}
+
+export interface MessageScrollToTop {
+  subtype: 'scrollToTop';
+  tab: 'public' | 'private';
+}
+
+export interface MessageUpdatePublic {
   subtype: 'publicUpdates';
   counter: number;
 }
 
-export interface CentralUpdatePrivate {
+export interface MessageUpdatePrivate {
   subtype: 'privateUpdates';
   counter: number;
 }
 
-export interface CentralUpdateActivity {
+export type MessageScreenUpdate = {
+  type: 'messageScreenUpdate';
+} & (
+  | MessageChangeTab
+  | MessageScrollToTop
+  | MessageUpdatePublic
+  | MessageUpdatePrivate
+);
+
+export interface ContactChangeTab {
+  subtype: 'changeTab';
+  tab: 'activity' | 'connections';
+}
+
+export interface ContactScrollToTop {
+  subtype: 'scrollToTop';
+  tab: 'activity' | 'connections';
+}
+
+export interface ContactUpdateActivity {
   subtype: 'activityUpdates';
   counter: number;
 }
 
-export interface CentralUpdateConnections {
-  subtype: 'connections';
-  substate: any;
+export interface ContactUpdateConnections {
+  subtype: 'connectionsUpdates';
+  counter: number;
 }
 
-export type CentralScreenUpdate = {
-  type: 'centralScreenUpdate';
+export type ContactScreenUpdate = {
+  type: 'contactScreenUpdate';
 } & (
-  | CentralChangeTab
-  | CentralScrollToTop
-  | CentralUpdatePublic
-  | CentralUpdatePrivate
-  | CentralUpdateActivity
-  | CentralUpdateConnections
+  | ContactChangeTab
+  | ContactScrollToTop
+  | ContactUpdateActivity
+  | ContactUpdateConnections
 );
 
 export type GlobalEvent =
@@ -95,8 +167,12 @@ export type GlobalEvent =
   | TriggerHashtagLink
   | HardwareBackOnCentralScreen
   | DrawerToggleOnCentralScreen
+  | HardwareBackOnContentScreen
+  | DrawerToggleOnContentScreen
   | AudioBlobComposed
-  | CentralScreenUpdate
+  | ContentScreenUpdate
+  | MessageScreenUpdate
+  | ContactScreenUpdate
   | ApproveCheckingNewVersion
   | HasNewVersion;
 

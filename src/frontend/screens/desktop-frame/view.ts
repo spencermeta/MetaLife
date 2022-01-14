@@ -10,16 +10,17 @@ import {View, Text, Pressable} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {styles} from './styles';
 import {t} from '../../drivers/localization';
-import PublicTabIcon from '../../components/tab-buttons/PublicTabIcon';
-import PrivateTabIcon from '../../components/tab-buttons/PrivateTabIcon';
-import ActivityTabIcon from '../../components/tab-buttons/ActivityTabIcon';
-import ConnectionsTabIcon from '../../components/tab-buttons/ConnectionsTabIcon';
 import TabIcon from '../../components/tab-buttons/TabIcon';
 import Avatar from '../../components/Avatar';
 import LocalizedHumanTime from '../../components/LocalizedHumanTime';
 import {Dimensions} from '../../global-styles/dimens';
 import {Palette} from '../../global-styles/palette';
 import {State} from './model';
+import HomeTabIcon from '../../components/tab-buttons/HomeTabIcon';
+import MessagesTabIcon from '../../components/tab-buttons/MessagesTabIcon';
+import ContactsTabIcon from '../../components/tab-buttons/ContactsTabIcon';
+import DiscoverTabIcon from '../../components/tab-buttons/DiscoverTabIcon';
+import ProfilesTabIcon from '../../components/tab-buttons/ProfilesTabIcon';
 
 class TopBarLeftSection extends PureComponent {
   public render() {
@@ -99,10 +100,6 @@ class ExtraButton extends PureComponent<{
 }
 
 type ViewState = Pick<State, 'currentTab'> &
-  Pick<State, 'numOfPublicUpdates'> &
-  Pick<State, 'numOfPrivateUpdates'> &
-  Pick<State, 'numOfActivityUpdates'> &
-  Pick<State, 'connections'> &
   Pick<State, 'name'> &
   Pick<State, 'selfAvatarUrl'> &
   Pick<State, 'hasNewVersion'> &
@@ -115,10 +112,7 @@ export default function view(
   localizationLoaded$: Stream<boolean>,
 ) {
   const initialViewState: ViewState = {
-    currentTab: 'public',
-    numOfPublicUpdates: 0,
-    numOfPrivateUpdates: 0,
-    numOfActivityUpdates: 0,
+    currentTab: 'home',
     selfAvatarUrl: '',
     hasNewVersion: false,
     combinedProgress: 0,
@@ -129,10 +123,6 @@ export default function view(
     .compose(
       dropRepeatsByKeys([
         'currentTab',
-        'numOfPublicUpdates',
-        'numOfPrivateUpdates',
-        'numOfActivityUpdates',
-        'connections',
         'name',
         'selfAvatarUrl',
         'hasNewVersion',
@@ -151,8 +141,6 @@ export default function view(
         ]);
       }
 
-      const status = state.connections?.status ?? 'bad';
-      const initializedSSB = state.connections?.initializedSSB ?? false;
       const {combinedProgress, estimateProgressDone} = state;
       const progressLabelOpacity =
         state.combinedProgress > 0 && state.combinedProgress < 1 ? 1 : 0;
@@ -182,26 +170,25 @@ export default function view(
           ]),
 
           h(View, {style: styles.leftMenu}, [
-            h(PublicTabIcon, {
+            h(HomeTabIcon, {
               style: styles.leftMenuTabButton,
-              isSelected: state.currentTab === 'public',
-              numOfUpdates: state.numOfPublicUpdates,
+              isSelected: state.currentTab === 'home',
             }),
-            h(PrivateTabIcon, {
+            h(MessagesTabIcon, {
               style: styles.leftMenuTabButton,
-              isSelected: state.currentTab === 'private',
-              numOfUpdates: state.numOfPrivateUpdates,
+              isSelected: state.currentTab === 'messages',
             }),
-            h(ActivityTabIcon, {
+            h(ContactsTabIcon, {
               style: styles.leftMenuTabButton,
-              isSelected: state.currentTab === 'activity',
-              numOfUpdates: state.numOfActivityUpdates,
+              isSelected: state.currentTab === 'contacts',
             }),
-            h(ConnectionsTabIcon, {
+            h(DiscoverTabIcon, {
               style: styles.leftMenuTabButton,
-              isSelected: state.currentTab === 'connections',
-              status,
-              allowWarningColors: initializedSSB,
+              isSelected: state.currentTab === 'discover',
+            }),
+            h(ProfilesTabIcon, {
+              style: styles.leftMenuTabButton,
+              isSelected: state.currentTab === 'profiles',
             }),
 
             h(View, {style: styles.spacer}),

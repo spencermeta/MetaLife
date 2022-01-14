@@ -6,7 +6,7 @@ import xs, {Stream} from 'xstream';
 import sample from 'xstream-sample';
 import {Command} from 'cycle-native-navigation';
 import {Screens} from '../enums';
-import {navOptions as centralNavOpts} from '../central';
+import {navOptions as contentNavOpts} from '../content';
 import {State} from './model';
 
 type Actions = {
@@ -40,8 +40,8 @@ export default function navigation(
                       children: [
                         {
                           component: {
-                            name: Screens.Central,
-                            options: centralNavOpts,
+                            name: Screens.Content,
+                            options: contentNavOpts,
                           },
                         },
                       ],

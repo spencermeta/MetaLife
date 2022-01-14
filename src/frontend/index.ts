@@ -32,8 +32,8 @@ import {Screens} from './screens/enums';
 import {global} from './screens/global';
 import {desktopFrame} from './screens/desktop-frame';
 import {welcome} from './screens/welcome';
+import {content} from './screens/content';
 import {migrating} from './screens/migrating';
-import {central} from './screens/central';
 import {drawer} from './screens/drawer';
 import {dialogAbout} from './screens/dialog-about';
 import {dialogThanks} from './screens/dialog-thanks';
@@ -59,6 +59,9 @@ import {instructions} from './screens/instructions';
 import {secretOutput} from './screens/secret-output';
 import {secretInput} from './screens/secret-input';
 import {settings} from './screens/settings';
+import {newMnemonic} from './screens/wallet/mnemonic-new';
+import {createWalletAccount} from './screens/wallet/create-account';
+//  import {checkMnemonic} from './screens/mnemonic-check';
 
 export const drivers = {
   appstate: makeAppStateDriver(),
@@ -99,8 +102,8 @@ export const screens: ScreensMapping = {
   [GlobalScreen]: withState(global),
   [Frame]: withState(desktopFrame),
   [Screens.Welcome]: withState(welcome),
+  [Screens.Content]: withState(content),
   [Screens.Migrating]: withState(migrating),
-  [Screens.Central]: withState(central),
   [Screens.Drawer]: withState(drawer),
   [Screens.DialogAbout]: dialogAbout,
   [Screens.DialogThanks]: dialogThanks,
@@ -126,4 +129,7 @@ export const screens: ScreensMapping = {
   [Screens.RawDatabase]: rawDatabase,
   [Screens.RawMessage]: rawMessage,
   [Screens.Settings]: withState(settings),
+  [Screens.NewMnemonic]: withState(newMnemonic),
+  [Screens.CreateWalletAccount]: withState(createWalletAccount),
+  //  [Screens.CheckMnemonic]: withState(checkMnemonic),
 };

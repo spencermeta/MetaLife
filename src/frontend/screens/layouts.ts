@@ -4,7 +4,7 @@
 
 import {Screens} from './enums';
 import {navOptions as welcomeNavOpts} from './welcome/index';
-import {navOptions as centralNavOpts} from './central/index';
+import {navOptions as contentNavOpts} from './content/index';
 import {Palette} from '../global-styles/palette';
 import {Typography} from '../global-styles/typography';
 import {Options, Layout} from 'react-native-navigation';
@@ -34,8 +34,8 @@ export const centralLayout: Layout = {
         children: [
           {
             component: {
-              name: Screens.Central,
-              options: centralNavOpts,
+              name: Screens.Content,
+              options: contentNavOpts,
             },
           },
         ],

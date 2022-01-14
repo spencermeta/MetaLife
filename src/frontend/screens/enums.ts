@@ -4,8 +4,8 @@
 
 export enum Screens {
   Welcome = 'Manyverse.Welcome',
+  Content = 'Manyverse.Content',
   Migrating = 'Manyverse.Migrating',
-  Central = 'Manyverse.Central',
   Drawer = 'Manyverse.Drawer',
   DialogAbout = 'Manyverse.Dialog.About',
   DialogThanks = 'Manyverse.Dialog.Thanks',
@@ -31,4 +31,7 @@ export enum Screens {
   RawDatabase = 'Manyverse.RawDatabase',
   RawMessage = 'Manyverse.RawMessage',
   Settings = 'Manyverse.Settings',
+  NewMnemonic = 'Manyverse.NewMnemonic',
+  CreateWalletAccount = 'Manyverse.CreateAccount',
+  //  CheckMnemonic = 'Manyverse.CheckMnemonic',
 }

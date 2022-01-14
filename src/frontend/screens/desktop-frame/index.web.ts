@@ -47,7 +47,7 @@ export function desktopFrame(sources: Sources): Sinks {
     actions.changeTab$.map(
       (tab) =>
         ({
-          type: 'centralScreenUpdate',
+          type: 'contentScreenUpdate',
           subtype: 'changeTab',
           tab,
         } as GlobalEvent),
@@ -56,7 +56,7 @@ export function desktopFrame(sources: Sources): Sinks {
     actions.scrollToTop$.map(
       (tab) =>
         ({
-          type: 'centralScreenUpdate',
+          type: 'contentScreenUpdate',
           subtype: 'scrollToTop',
           tab,
         } as GlobalEvent),

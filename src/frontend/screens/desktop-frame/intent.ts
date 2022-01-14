@@ -22,24 +22,29 @@ export default function intent(
 ) {
   const changeTab$ = xs.merge(
     reactSource
-      .select('public-tab-button')
+      .select('home-tab-button')
       .events('press')
-      .mapTo('public' as TabID),
+      .mapTo('home' as TabID),
 
     reactSource
-      .select('private-tab-button')
+      .select('messages-tab-button')
       .events('press')
-      .mapTo('private' as TabID),
+      .mapTo('messages' as TabID),
 
     reactSource
-      .select('activity-tab-button')
+      .select('contacts-tab-button')
       .events('press')
-      .mapTo('activity' as TabID),
+      .mapTo('contacts' as TabID),
 
     reactSource
-      .select('connections-tab-button')
+      .select('discover-tab-button')
       .events('press')
-      .mapTo('connections' as TabID),
+      .mapTo('discover' as TabID),
+
+    reactSource
+      .select('profiles-tab-button')
+      .events('press')
+      .mapTo('profiles' as TabID),
   );
 
   const changeTabWithState$ = changeTab$.compose(sampleCombine(state$));
